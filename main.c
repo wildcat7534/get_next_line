@@ -6,63 +6,45 @@
 /*   By: cmassol <cmassol@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 12:06:47 by cmassol           #+#    #+#             */
-/*   Updated: 2024/08/13 12:02:13 by cmassol          ###   ########.fr       */
+/*   Updated: 2024/09/02 20:52:14 by cmassol          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include "get_next_line.h"
+#include <stdio.h>
+
+// valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./a.out tests/empty.txt
 
 int	main(int argc, char **argv)
 {
-	int		fd;
-	size_t	cursor;
-	char	*buffer;
-	char	*line;
-	char	*tmp;
-
-	buffer = (char *)malloc(sizeof(char *) * (BUFFER_SIZE + 1));
-	strSlice = (char *)malloc(sizeof(char *) * (BUFFER_SIZE + 1));
-	tmp = (char *)malloc(sizeof(char *) * (BUFFER_SIZE + 1));
-	if (!buffer)
-		return (1);
-	if (argc != 2)
-	{
-		printf("Usage: %s <file>\n", argv[0]);
-		return (1);
-	}
-	fd = open(argv[1], O_RDONLY);
-	if (fd == -1)
-	{
-		printf("Error: cannot open file %s\n", argv[1]);
-		return (1);
-	}
-	cursor = 1;
-	while (cursor)
-	{
-		cursor = read(fd, buffer, BUFFER_SIZE);
-		buffer[cursor] = '\0';
-		//ft_strlcpy(str, buffer, BUFFER_SIZE);
-		tmp = ft_strjoin(strSlice, buffer);
-		//free(str);
-		strSlice = ft_strdup(tmp);
-		//printf("%s", str);
-		line = get_line(strSlice);
-		if (line)
-			printf("%s", line);
-		//printf("%s", line);
-	}
-	/*	cursor = get_cursor(fd);
-		while (cursor)
+	int fd;
+	char *line;
+	printf("argc: %d\n", argc);
+	/*	if (argc != 2)
 		{
-			printf("%s\n", cursor);
-			//free(cursor);
-			cursor = get_line(fd);
+			printf("Usage: %s <file>\n", argv[0]);
+			return (1);
 		}*/
-	printf("%s", newstr);
+	fd = open(argv[1], O_RDONLY);
+	// fd = open(NULL, O_RDONLY);
+	/*	if (fd < 0 || fd > 1024 || BUFFER_SIZE < 1)
+		{
+			printf("Error: cannot open file %s\n", argv[1]);
+			return (1);
+		}*/
+	printf("BUFFER_SIZE: %d\n", BUFFER_SIZE);
+	line = get_next_line(fd);
+	while (line)
+	{
+		printf("%s", line);
+		free(line);
+		line = NULL;
+		// printf("free line Main\n"); //TODO: remove this line
+		line = get_next_line(fd);
+	}
+	free(line);
+	line = NULL;
+	printf("free line FINAL Main\n"); // TODO: remove this line
 	close(fd);
 	return (0);
 }
